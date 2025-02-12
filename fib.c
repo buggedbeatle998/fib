@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <math.h>
 #include "C:\gmp\gmp.h"
 
 const uint8_t tab32[32] = {
@@ -19,6 +20,12 @@ uint32_t log2_32(uint32_t value)
     value |= value >> 8;
     value |= value >> 16;
     return tab32[(uint32_t)(value * 0x07C4ACDD) >> 27];
+}
+
+double biginteger_log_modified(mpz_t x) {
+    signed long int ex;
+    const double di = mpz_get_d_2exp(&ex, x);
+    return log10(di) + log10(2) * (double) ex;
 }
 
 uint32_t fib(uint32_t n) {
@@ -50,8 +57,9 @@ uint32_t fib(uint32_t n) {
         }
 
         clock_t after = clock();
-        //gmp_printf("%Zd\n", *m1);
+        gmp_printf("%Zd\n", *m1);
         mpz_clears(m0i, m1i, t0i, NULL);
+        printf("This number has %d digits", (uint64_t)biginteger_log_modified(*m1) + 1);
         printf("It took %d ms to calculate the %dth fibonacci number.\n", (after - before) * 1000 / CLOCKS_PER_SEC, n);
     } else {
         printf("%d\n", n);
@@ -65,7 +73,7 @@ uint32_t fib(uint32_t n) {
 
 
 int main() {
-    fib(1000000000);
+    fib(10000);
 
     return 0;
 }
