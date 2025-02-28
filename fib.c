@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <math.h>
-#include "C:\gmp\gmp.h"
+#include "gmp.h"
 
 const uint8_t tab32[32] = {
      0,  9,  1, 10, 13, 21,  2, 29,
@@ -30,11 +30,11 @@ double biginteger_log_modified(mpz_t x) {
 
 uint32_t fib(uint32_t n) {
     if (n > 1) {
+        clock_t before = clock();
         mpz_t m0i, m1i, t0i;
         mpz_inits(m0i, m1i, t0i, NULL);
         mpz_set_ui(m0i, 0);
         mpz_set_ui(m1i, 1);
-        clock_t before = clock();
         mpz_t *m0 = &m0i;
         mpz_t *m1 = &m1i;
         mpz_t *t0 = &t0i;
@@ -57,9 +57,9 @@ uint32_t fib(uint32_t n) {
         }
 
         clock_t after = clock();
-        gmp_printf("%Zd\n", *m1);
+        //gmp_printf("%Zd\n", *m1);
+        printf("This number has %llu digits\n", (uint64_t)biginteger_log_modified(*m1) + 1);
         mpz_clears(m0i, m1i, t0i, NULL);
-        printf("This number has %d digits", (uint64_t)biginteger_log_modified(*m1) + 1);
         printf("It took %d ms to calculate the %dth fibonacci number.\n", (after - before) * 1000 / CLOCKS_PER_SEC, n);
     } else {
         printf("%d\n", n);
@@ -73,7 +73,7 @@ uint32_t fib(uint32_t n) {
 
 
 int main() {
-    fib(10000);
+    fib(140000000);
 
     return 0;
 }
