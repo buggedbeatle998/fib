@@ -72,8 +72,8 @@ uint32_t fib(uint32_t n) {
 }
 
 
-int main() {
-    fib(140000000);
+int main(int argc, char **argv) {
+    fib(atoi(argv[1]));
 
     return 0;
 }
