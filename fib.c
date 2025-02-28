@@ -28,7 +28,7 @@ double biginteger_log_modified(mpz_t x) {
     return log10(di) + log10(2) * (double) ex;
 }
 
-uint32_t fib(uint32_t n) {
+void fib(uint32_t n) {
     if (n > 1) {
         clock_t before = clock();
         mpz_t m0i, m1i, t0i;
@@ -62,13 +62,10 @@ uint32_t fib(uint32_t n) {
         mpz_clears(m0i, m1i, t0i, NULL);
         printf("It took %d ms to calculate the %dth fibonacci number.\n", (after - before) * 1000 / CLOCKS_PER_SEC, n);
     } else {
-        printf("%d\n", n);
+        //printf("%d\n", n);
+        printf("This number has 1 digit\n");
         printf("It was Instant to calculate the %dth fibonacci number.\n", n);
-        return 0;
     }
-    
-    
-
 }
 
 
