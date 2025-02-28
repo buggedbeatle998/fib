@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <time.h>
 #include <math.h>
 #include "gmp.h"
+
 
 const uint8_t tab32[32] = {
      0,  9,  1, 10, 13, 21,  2, 29,
@@ -12,8 +12,12 @@ const uint8_t tab32[32] = {
      8, 12, 20, 28, 15, 17, 24,  7,
     19, 27, 23,  6, 26,  5,  4, 31};
 
+/// @brief Quickly Finds log2 of a 32-bit uint
+/// @param value 
+/// @return log2(value)
 uint32_t log2_32(uint32_t value)
 {
+    // Bit-twiddling to quickly find log2 of a 32-bit uint.
     value |= value >> 1;
     value |= value >> 2;
     value |= value >> 4;
@@ -22,46 +26,65 @@ uint32_t log2_32(uint32_t value)
     return tab32[(uint32_t)(value * 0x07C4ACDD) >> 27];
 }
 
-double biginteger_log_modified(mpz_t x) {
-    signed long int ex;
-    const double di = mpz_get_d_2exp(&ex, x);
-    return log10(di) + log10(2) * (double) ex;
+/// @brief Finds log10 of big number x
+/// @param value
+/// @return log10(value)
+double biginteger_log_modified(mpz_t value) {
+    // A neat trick to get the log10 of a big number.
+    signed long int exponent;
+    const double mantissa = mpz_get_d_2exp(&exponent, value);
+    return log10(mantissa) + log10(2) * (double) exponent;
 }
 
+/// @brief Finds the nth Fibonacci number
+/// @param n
 void fib(uint32_t n) {
     if (n > 1) {
         clock_t before = clock();
-        mpz_t m0i, m1i, t0i;
-        mpz_inits(m0i, m1i, t0i, NULL);
-        mpz_set_ui(m0i, 0);
-        mpz_set_ui(m1i, 1);
-        mpz_t *m0 = &m0i;
-        mpz_t *m1 = &m1i;
-        mpz_t *t0 = &t0i;
+        mpz_t m0, m1, t0;
+        mpz_inits(m0, m1, t0, NULL);
+        // Here m0 and m1 represent the top and bottom values of a 1x2 matrix.
+        // These are the 0th and 1st numbers of the Fibonacci sequence
+        // When a matrix is multiplied by this matrix with our custom box product,
+        // The bottom value set to the addition of both values and the top value is
+        // set to the previous bottom value. this iterates the Fibonacci sequence.
+        // t0 is a temporary variable for calculations
+        mpz_set_ui(m0, 0);
+        mpz_set_ui(m1, 1);
         uint8_t i = log2_32(n);
 
-        //for (uint8_t i = log2_32(n); i >= 0, i--;) {
+        // Here, we will raise our matrix to the power of n which will increment
+        // the Fibonacci sequence n times.
+        // We are using 2^k-ary binary exponentiation to achive this.
         while (i--) {
-            mpz_mul(*t0, *m1, *m1);
+            // Square the matrix.
+            // (a) ☒ (a) = a(a ) + (b^2)(1)
+            // (b)    (b)    (2b)        (1)
+            mpz_mul(t0, m1, m1);
             
-            mpz_add(*m1, *m1, *m1);
-            mpz_mul(*m1, *m1, *m0);
-            mpz_add(*m1, *m1, *t0);
+            mpz_add(m1, m1, m1);
+            mpz_mul(m1, m1, m0);
+            mpz_add(m1, m1, t0);
 
-            mpz_mul(*m0, *m0, *m0);
-            mpz_add(*m0, *m0, *t0);
+            mpz_mul(m0, m0, m0);
+            mpz_add(m0, m0, t0);
             if (n & (1 << i)) {
-                mpz_swap(*m0, *m1);
-                mpz_add(*m1, *m1, *m0);
+                // Multiply the matrix by the original matrix.
+                // (a) ☒ (c) = a(c) + (bd)(1) + bc(0)
+                // (b)    (d)    (d)       (1)     (1)
+                // However this simplifies is just incrementing the Fibonacci sequence once.
+                mpz_swap(m0, m1);
+                mpz_add(m1, m1, m0);
             }
         }
 
         clock_t after = clock();
-        //gmp_printf("%Zd\n", *m1);
-        printf("This number has %llu digits\n", (uint64_t)biginteger_log_modified(*m1) + 1);
-        mpz_clears(m0i, m1i, t0i, NULL);
-        printf("It took %d ms to calculate the %dth fibonacci number.\n", (after - before) * 1000 / CLOCKS_PER_SEC, n);
+        //gmp_printf("%Zd\n", m1);
+        printf("This number has %llu digits\n", (uint64_t)biginteger_log_modified(m1) + 1);
+        mpz_clears(m0, m1, t0, NULL);
+        printf("It took %ld ms to calculate the %dth fibonacci number.\n", (after - before) * 1000 / CLOCKS_PER_SEC, n);
     } else {
+        // Base case.
         //printf("%d\n", n);
         printf("This number has 1 digit\n");
         printf("It was Instant to calculate the %dth fibonacci number.\n", n);
@@ -70,6 +93,7 @@ void fib(uint32_t n) {
 
 
 int main(int argc, char **argv) {
+    // Gets number from command-line args.
     fib(atoi(argv[1]));
 
     return 0;
