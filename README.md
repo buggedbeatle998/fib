@@ -1,2 +1,2 @@
-Requires GMP library
+Requires GMP library.
 may require linking libm.a
