@@ -1,1 +1,2 @@
-gcc fib.c -lgmp -o fib
+Requires GMP library
+may require linking libm.a
