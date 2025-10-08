@@ -10,13 +10,13 @@ const uint8_t tab32[32] = {
      0,  9,  1, 10, 13, 21,  2, 29,
     11, 14, 16, 18, 22, 25,  3, 30,
      8, 12, 20, 28, 15, 17, 24,  7,
-    19, 27, 23,  6, 26,  5,  4, 31};
+    19, 27, 23,  6, 26,  5,  4, 31
+};
 
 /// @brief Quickly Finds log2 of a 32-bit uint
 /// @param value 
 /// @return log2(value)
-uint32_t log2_32(uint32_t value)
-{
+uint32_t log2_32(uint32_t value) {
     // Bit-twiddling to quickly find log2 of a 32-bit uint.
     value |= value >> 1;
     value |= value >> 2;
@@ -59,7 +59,7 @@ void fib(uint32_t n) {
         while (i--) {
             // Square the matrix.
             // (a) ☒ (a) = a(a ) + (b^2)(1)
-            // (b)    (b)    (2b)        (1)
+            // (b)   (b)    (2b)        (1)
             mpz_mul(t0, m1, m1);
             
             mpz_add(m1, m1, m1);
