@@ -79,8 +79,9 @@ void fib(uint32_t n) {
         }
 
         clock_t after = clock();
-        //gmp_printf("%Zd\n", m1);
+        gmp_printf("%Zd\n", m1);
         printf("This number has %llu digits\n", (uint64_t)biginteger_log_modified(m1) + 1);
+        printf("This number has %llu bits\n", (uint64_t)mpz_sizeinbase(m1, 2));
         mpz_clears(m0, m1, t0, NULL);
         printf("It took %ld ms to calculate the %dth fibonacci number.\n", (after - before) * 1000 / CLOCKS_PER_SEC, n);
     } else {
