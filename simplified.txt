@@ -1,0 +1,20 @@
+n ← the index of the fib number you want
+a ← 0
+b ← 1
+i ← log₂(n);
+
+while (i > 0)
+    i ← i - 1
+
+    t ← b²
+    b ← ab
+    b ← b + t
+
+    a ← a²
+    a ← a + t
+
+    if (n is divisible 2^i)
+        a ⇔ b
+        b = a + b
+    
+b is the nth fib number
