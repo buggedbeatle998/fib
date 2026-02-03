@@ -62,18 +62,9 @@ void fib(uint32_t n, bool benchmark) {
         // the Fibonacci sequence n times.
         // We are using 2^k-ary binary exponentiation to achive this.
         while (i--) {
-            // Square the matrix.
-            // (a) ☒ (a) = a(a ) + (b^2)(1)
-            // (b)   (b)    (2b)        (1)
-            // Orig
-            //mpz_mul(t0, m1, m1);
-            //
-            //mpz_mul(m1, m1, m0);
-            //mpz_add(m1, m1, m1);
-            //mpz_add(m1, m1, t0);
-
-            //mpz_mul(m0, m0, m0);
-            //mpz_add(m0, m0, t0);
+            // We calculate:
+            // F(2n + 1) = 4F^2(n) - F^2(n - 1) + 2(-1)^n
+            // F(2n - 1) = F^2(n) + F^2(n - 1)
             mpz_mul(t0, m0, m0);
             mpz_mul(m0, m1, m1);
             mpz_mul_2exp(m1, m0, 2);
@@ -85,15 +76,12 @@ void fib(uint32_t n, bool benchmark) {
             mpz_add(m0, m0, t0);
 
             if ((is_neg = n & (1 << i))) {
-                // Multiply the matrix by the original matrix.
-                // (a) ☒ (c) = a(c) + (bd)(1) + bc(0)
-                // (b)    (d)    (d)       (1)     (1)
-                // However this simplifies is just incrementing the Fibonacci sequence once.
+                // Choose F(2n + 1) and F(2n)
                 mpz_sub(m0, m1, m0);
             } else {
+                // Choose F(2n) and F(2n - 1)
                 mpz_sub(m1, m1, m0);
             }
-            //gmp_printf("%Zd\n%Zd\n\n", m1, m0);
         }
 
         clock_t after = clock();
@@ -111,7 +99,7 @@ void fib(uint32_t n, bool benchmark) {
         if (benchmark) {
             printf("%ld", 0.0);
         } else {
-            //printf("%d\n", n);
+            printf("%d\n", n);
             printf("This number has 1 digit\n");
             printf("It was Instant to calculate the %dth fibonacci number.\n", n);
         }
